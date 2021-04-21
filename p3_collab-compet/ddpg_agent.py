@@ -8,7 +8,7 @@ import torch.nn.functional as F
 import numpy as np
 
 BATCH_SIZE = 64
-BUFFER_SIZE = 10000
+BUFFER_SIZE = int(10000)
 WEIGHT_DECAY = 0.
 ACTOR_LR = 5e-4
 CRITIC_LR = 1e-3
@@ -69,15 +69,15 @@ class Agent:
         self.action_size = action_size 
         self.memory = ReplayBuffer(BATCH_SIZE, BUFFER_SIZE)
         
-        self.actor_local = Actor(state_size, action_size)
-        self.actor_target = Actor(state_size, action_size)
+        self.actor_local = Actor(state_size, action_size).to(device)
+        self.actor_target = Actor(state_size, action_size).to(device)
         self.actor_optimizer = Adam(self.actor_local.parameters(), lr = ACTOR_LR)
         
-        self.critic_local = Critic(state_size, action_size)
-        self.critic_target = Critic(state_size, action_size)
+        self.critic_local = Critic(state_size, action_size).to(device)
+        self.critic_target = Critic(state_size, action_size).to(device)
         self.critic_optimizer = Adam(self.critic_local.parameters(), lr = CRITIC_LR, weight_decay = WEIGHT_DECAY)
         
-        self.noise = OUNoise(self.action_size)
+        self.noise = OUNoise(action_size)
         self.t_step = 0 
         
     def step(self, state, action, reward, next_state, done):
